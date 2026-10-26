@@ -899,3 +899,273 @@
             }
         });
         
+        /* -------------------------------------------------------------
+           7. FULLSCREEN LIGHTBOX MODAL & SWIPE GESTURES
+        ------------------------------------------------------------- */
+        let lightboxIndex = 0;
+        let lightboxObjectUrl = null;
+
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxViewport = document.getElementById('lightbox-viewport');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lbPrev = document.getElementById('lb-prev');
+        const lbNext = document.getElementById('lb-next');
+
+        function openLightbox(index) {
+            lightboxIndex = index;
+            SCREENS.LIGHTBOX.classList.remove('hidden-screen');
+            renderLightboxSlide();
+        }
+
+        function closeLightbox() {
+            revokeLightboxObjectUrl();
+            SCREENS.LIGHTBOX.classList.add('hidden-screen');
+            lightboxViewport.innerHTML = '';
+        }
+
+        function revokeLightboxObjectUrl() {
+            if (lightboxObjectUrl) {
+                URL.revokeObjectURL(lightboxObjectUrl);
+                lightboxObjectUrl = null;
+            }
+        }
+
+        function renderLightboxSlide() {
+            revokeLightboxObjectUrl();
+            lightboxViewport.innerHTML = '';
+
+            if (vaultItems.length === 0) {
+                closeLightbox();
+                return;
+            }
+
+            const item = vaultItems[lightboxIndex];
+            lightboxObjectUrl = URL.createObjectURL(item.blob);
+            lightboxCounter.textContent = `${lightboxIndex + 1} / ${vaultItems.length}`;
+
+            if (vaultItems.length > 1) {
+                lbPrev.classList.remove('hidden');
+                lbNext.classList.remove('hidden');
+            } else {
+                lbPrev.classList.add('hidden');
+                lbNext.classList.add('hidden');
+            }
+
+            if (item.type.startsWith('video/')) {
+                const video = document.createElement('video');
+                video.src = lightboxObjectUrl;
+                video.controls = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.className = 'max-w-full max-h-full object-contain rounded-lg shadow-2xl';
+                lightboxViewport.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = lightboxObjectUrl;
+                img.alt = item.name;
+                img.className = 'max-w-full max-h-full object-contain rounded-lg shadow-2xl select-none';
+                img.draggable = false;
+                lightboxViewport.appendChild(img);
+            }
+        }
+
+        function nextLightbox() {
+            if (vaultItems.length <= 1) return;
+            lightboxIndex = (lightboxIndex + 1) % vaultItems.length;
+            renderLightboxSlide();
+        }
+
+        function prevLightbox() {
+            if (vaultItems.length <= 1) return;
+            lightboxIndex = (lightboxIndex - 1 + vaultItems.length) % vaultItems.length;
+            renderLightboxSlide();
+        }
+
+        document.getElementById('btn-close-lightbox').addEventListener('click', closeLightbox);
+        lbNext.addEventListener('click', nextLightbox);
+        lbPrev.addEventListener('click', prevLightbox);
+
+        document.getElementById('btn-delete-lightbox-item').addEventListener('click', async () => {
+            if (vaultItems.length === 0) return;
+            const item = vaultItems[lightboxIndex];
+            try {
+                await deleteMediaFromDB(item.id);
+                showToast("Mídia removida");
+                vaultItems.splice(lightboxIndex, 1);
+                if (vaultItems.length === 0) {
+                    closeLightbox();
+                    await loadVaultItems();
+                } else {
+                    if (lightboxIndex >= vaultItems.length) {
+                        lightboxIndex = vaultItems.length - 1;
+                    }
+                    renderLightboxSlide();
+                    loadVaultItems();
+                }
+            } catch (err) {
+                showToast("Erro ao remover mídia");
+            }
+        });
+
+        // Touch Swipe Gestures inside Lightbox
+        let lbTouchStartX = 0;
+        let lbTouchStartY = 0;
+        let lbTouchEndX = 0;
+        let lbTouchEndY = 0;
+        const lightboxSwiper = document.getElementById('lightbox-swiper');
+
+        lightboxSwiper.addEventListener('touchstart', (e) => {
+            lbTouchStartX = e.changedTouches[0].screenX;
+            lbTouchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        lightboxSwiper.addEventListener('touchend', (e) => {
+            lbTouchEndX = e.changedTouches[0].screenX;
+            lbTouchEndY = e.changedTouches[0].screenY;
+            handleLightboxGesture();
+        }, { passive: true });
+
+        function handleLightboxGesture() {
+            const deltaX = lbTouchEndX - lbTouchStartX;
+            const deltaY = lbTouchEndY - lbTouchStartY;
+
+            if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX < 0) nextLightbox();
+                else prevLightbox();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (SCREENS.LIGHTBOX.classList.contains('hidden-screen')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextLightbox();
+            if (e.key === 'ArrowLeft') prevLightbox();
+        });
+        
+        /* -------------------------------------------------------------
+           8. SECRET DISCREET NOTES SYSTEM
+        ------------------------------------------------------------- */
+        let notesItems = [];
+        let currentEditingNote = null;
+
+        const notesEmpty = document.getElementById('notes-empty');
+        const notesGrid = document.getElementById('notes-grid');
+        const notesListView = document.getElementById('notes-list-view');
+        const noteEditorView = document.getElementById('note-editor-view');
+        const noteTitleInput = document.getElementById('note-title-input');
+        const noteContentInput = document.getElementById('note-content-input');
+
+        async function loadNotesItems() {
+            try {
+                notesItems = await getAllNotesFromDB();
+                notesItems.sort((a, b) => b.updatedAt - a.updatedAt);
+                renderNotesList();
+            } catch (err) {
+                showToast("Erro ao carregar notas");
+            }
+        }
+
+        function renderNotesList() {
+            notesGrid.innerHTML = '';
+            if (notesItems.length === 0) {
+                notesEmpty.classList.remove('hidden');
+                notesGrid.classList.add('hidden');
+            } else {
+                notesEmpty.classList.add('hidden');
+                notesGrid.classList.remove('hidden');
+
+                notesItems.forEach(note => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-slate-900 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-indigo-500/50 transition flex flex-col justify-between h-32 shadow';
+
+                    const dateStr = new Date(note.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+                    card.innerHTML = `
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-100 truncate mb-1">${escapeHtml(note.title || 'Sem título')}</h3>
+                            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">${escapeHtml(note.content || 'Nota vazia...')}</p>
+                        </div>
+                        <div class="text-[10px] text-slate-600 font-semibold mt-2">${dateStr}</div>
+                    `;
+
+                    card.addEventListener('click', () => openNoteEditor(note));
+                    notesGrid.appendChild(card);
+                });
+            }
+        }
+
+        function openNoteEditor(note = null) {
+            currentEditingNote = note ? { ...note } : {
+                id: 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 7),
+                title: '',
+                content: '',
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+
+            noteTitleInput.value = currentEditingNote.title || '';
+            noteContentInput.value = currentEditingNote.content || '';
+            
+            noteEditorView.classList.remove('hidden');
+        }
+
+        function closeNoteEditor() {
+            noteEditorView.classList.add('hidden');
+            currentEditingNote = null;
+        }
+
+        document.getElementById('btn-new-note').addEventListener('click', () => openNoteEditor());
+        document.getElementById('btn-back-notes').addEventListener('click', closeNoteEditor);
+
+        document.getElementById('btn-save-note').addEventListener('click', async () => {
+            if (!currentEditingNote) return;
+
+            currentEditingNote.title = noteTitleInput.value.trim();
+            currentEditingNote.content = noteContentInput.value.trim();
+            currentEditingNote.updatedAt = Date.now();
+
+            if (!currentEditingNote.title && !currentEditingNote.content) {
+                showToast("Nota vazia não foi salva");
+                closeNoteEditor();
+                return;
+            }
+
+            try {
+                await saveNoteToDB(currentEditingNote);
+                showToast("Nota salva");
+                closeNoteEditor();
+                await loadNotesItems();
+            } catch (err) {
+                showToast("Erro ao salvar nota");
+            }
+        });
+
+        document.getElementById('btn-delete-note').addEventListener('click', async () => {
+            if (!currentEditingNote || !currentEditingNote.id) return;
+            try {
+                await deleteNoteFromDB(currentEditingNote.id);
+                showToast("Nota removida");
+                closeNoteEditor();
+                await loadNotesItems();
+            } catch (err) {
+                showToast("Erro ao excluir nota");
+            }
+        });
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        /* -------------------------------------------------------------
+           9. INIT
+        ------------------------------------------------------------- */
+        window.addEventListener('load', () => {
+            initDB().catch(err => console.error("Database init error:", err));
+            initBlockGame();
+        });
+    </script>
+</body>
+</html>
+        
