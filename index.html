@@ -259,3 +259,143 @@
             </div>
         </main>
     </div>
+
+
+    <!-- ========================================== -->
+    <!-- SCREEN 5: FULLSCREEN LIGHTBOX MODAL        -->
+    <!-- ========================================== -->
+    <div id="lightbox-modal" class="hidden-screen fixed inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden">
+        <!-- Lightbox Top Controls -->
+        <header id="lightbox-header" class="absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/90 via-black/40 to-transparent p-4 flex justify-between items-center transition-opacity duration-300">
+            <button id="btn-close-lightbox" class="p-2 rounded-full bg-slate-800/80 text-slate-200 hover:bg-slate-700 active:scale-95 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <span id="lightbox-counter" class="text-xs font-semibold text-slate-300 bg-slate-900/80 border border-slate-800 px-3 py-1 rounded-full">0 / 0</span>
+            <button id="btn-delete-lightbox-item" class="p-2 rounded-full bg-red-600/80 text-white hover:bg-red-500 active:scale-95 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Dynamic Fullscreen Container -->
+        <main id="lightbox-swiper" class="relative w-full h-full flex items-center justify-center bg-black">
+            <div id="lightbox-viewport" class="w-full h-full flex items-center justify-center relative">
+                <!-- Rendered Image or Video Element -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <button id="lb-prev" class="absolute left-3 z-20 p-3 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/70 active:scale-90 transition hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <button id="lb-next" class="absolute right-3 z-20 p-3 rounded-full bg-black/40 text-white/70 hover:text-white hover:bg-black/70 active:scale-90 transition hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </main>
+    </div>
+
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-slate-200 text-xs px-4 py-2 rounded-full border border-slate-700 shadow-xl opacity-0 pointer-events-none transition-opacity duration-300 z-50"></div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT APP & SYSTEM CORE              -->
+    <!-- ========================================== -->
+    <script>
+        /* -------------------------------------------------------------
+           1. NAVIGATION & SCREEN MANAGER
+        ------------------------------------------------------------- */
+        const SCREENS = {
+            GAME: document.getElementById('screen-game'),
+            PAGE404: document.getElementById('screen-404'),
+            PIN: document.getElementById('screen-pin'),
+            VAULT: document.getElementById('screen-vault'),
+            LIGHTBOX: document.getElementById('lightbox-modal')
+        };
+
+        function showScreen(targetScreen) {
+            Object.values(SCREENS).forEach(screen => {
+                if (screen !== SCREENS.LIGHTBOX) screen.classList.add('hidden-screen');
+            });
+            targetScreen.classList.remove('hidden-screen');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2200);
+        }
+
+        /* -------------------------------------------------------------
+           2. DISCREET TRIGGERS AND SEQUENCES
+        ------------------------------------------------------------- */
+        let sairTapCount = 0;
+        let sairTapTimer = null;
+        const btnSair = document.getElementById('btn-sair');
+
+        btnSair.addEventListener('click', (e) => {
+            e.preventDefault();
+            sairTapCount++;
+            
+            clearTimeout(sairTapTimer);
+            sairTapTimer = setTimeout(() => {
+                if (sairTapCount < 12) {
+                    sairTapCount = 0;
+                    initBlockGame();
+                }
+            }, 3000);
+
+            if (sairTapCount >= 12) {
+                sairTapCount = 0;
+                clearTimeout(sairTapTimer);
+                reset404Triggers();
+                showScreen(SCREENS.PAGE404);
+            }
+        });
+
+        let firstFourTapped = false;
+        let zeroTapCount = 0;
+        let zeroTapTimer = null;
+        const triggerFirstFour = document.getElementById('trigger-first-four');
+        const triggerZero = document.getElementById('trigger-zero');
+
+        function reset404Triggers() {
+            firstFourTapped = false;
+            zeroTapCount = 0;
+            clearTimeout(zeroTapTimer);
+        }
+
+        triggerFirstFour.addEventListener('click', (e) => {
+            e.stopPropagation();
+            firstFourTapped = true;
+            clearTimeout(zeroTapTimer);
+            zeroTapTimer = setTimeout(reset404Triggers, 4000);
+        });
+
+        triggerZero.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!firstFourTapped) return;
+
+            zeroTapCount++;
+            clearTimeout(zeroTapTimer);
+            zeroTapTimer = setTimeout(reset404Triggers, 3500);
+
+            if (zeroTapCount >= 5) {
+                reset404Triggers();
+                resetPinInput();
+                showScreen(SCREENS.PIN);
+            }
+        });
+
+        document.getElementById('btn-404-back').addEventListener('click', () => {
+            reset404Triggers();
+            showScreen(SCREENS.GAME);
+        });
+        
