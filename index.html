@@ -100,3 +100,162 @@
         </footer>
     </div>
     
+    <!-- ========================================== -->
+    <!-- SCREEN 2: 404 NOT FOUND (DISCREET COVER 2) -->
+    <!-- ========================================== -->
+    <div id="screen-404" class="hidden-screen h-full w-full bg-white text-slate-800 flex flex-col items-center justify-center p-6 text-center select-none">
+        <h1 class="text-8xl font-extrabold text-slate-900 tracking-tight mb-2">
+            <span id="trigger-first-four" class="inline-block cursor-pointer hover:opacity-90 active:scale-95 transition-transform">4</span><span id="trigger-zero" class="inline-block cursor-pointer hover:opacity-90 active:scale-95 transition-transform">0</span>4
+        </h1>
+        <h2 class="text-2xl font-semibold mb-4 text-slate-700">Página Não Encontrada</h2>
+        <p class="text-slate-500 max-w-xs mb-8 text-sm">
+            O recurso requisitado não foi encontrado no servidor ou foi removido temporariamente.
+        </p>
+        <button id="btn-404-back" class="px-5 py-2.5 bg-slate-800 text-white text-sm font-medium rounded-md shadow hover:bg-slate-700 active:scale-95 transition">
+            Voltar ao Início
+        </button>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- SCREEN 3: SECRET VAULT PIN LOCK            -->
+    <!-- ========================================== -->
+    <div id="screen-pin" class="hidden-screen h-full w-full bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-xs flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h2 class="text-lg font-bold text-slate-200 mb-1">Cofre Protegido</h2>
+            <p class="text-xs text-slate-500 mb-6">Digite a senha para acessar o cofre</p>
+
+            <!-- PIN Display -->
+            <div id="pin-dots" class="flex gap-4 mb-8">
+                <div class="w-3.5 h-3.5 rounded-full border-2 border-slate-600"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-2 border-slate-600"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-2 border-slate-600"></div>
+                <div class="w-3.5 h-3.5 rounded-full border-2 border-slate-600"></div>
+            </div>
+
+            <!-- PIN Keypad -->
+            <div class="grid grid-cols-3 gap-4 w-full px-4">
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">1</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">2</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">3</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">4</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">5</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">6</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">7</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">8</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">9</button>
+                <button id="pin-clear" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-400 active:bg-slate-800 transition flex items-center justify-center">Limpar</button>
+                <button class="pin-key h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xl font-bold text-slate-200 active:bg-indigo-600 transition">0</button>
+                <button id="pin-del" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-400 active:bg-slate-800 transition flex items-center justify-center">⌫</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- SCREEN 4: SECRET VAULT MAIN DASHBOARD      -->
+    <!-- ========================================== -->
+    <div id="screen-vault" class="hidden-screen h-full w-full bg-slate-950 flex flex-col">
+        <!-- Main Top Bar -->
+        <header class="bg-slate-900/90 border-b border-slate-800 p-3.5 flex justify-between items-center z-20">
+            <div class="flex items-center gap-3">
+                <button id="btn-lock-vault" class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 active:scale-95 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </button>
+                <!-- Vault Segment Selector Tabs -->
+                <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <button id="tab-media" class="px-3.5 py-1 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-md">
+                        Mídias
+                    </button>
+                    <button id="tab-notes" class="px-3.5 py-1 rounded-lg text-xs font-bold transition text-slate-400 hover:text-slate-200">
+                        Notas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contextual Action Header Buttons -->
+            <div id="media-actions" class="flex items-center gap-2">
+                <label for="media-input" class="cursor-pointer px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-1.5 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Adicionar</span>
+                </label>
+                <input type="file" id="media-input" accept="image/*,video/*" multiple class="hidden" />
+            </div>
+
+            <div id="notes-actions" class="hidden flex items-center gap-2">
+                <button id="btn-new-note" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-1.5 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Nova Nota</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEW A: MEDIA GALLERY GRID -->
+        <main id="view-media" class="flex-1 w-full h-full overflow-y-auto custom-scroll p-3 bg-slate-950">
+            <!-- Empty Media Placeholder -->
+            <div id="vault-empty" class="h-full flex flex-col items-center justify-center text-slate-500 p-6 text-center">
+                <svg class="w-16 h-16 mb-3 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <p class="text-sm font-medium text-slate-400">Nenhuma mídia no cofre</p>
+                <p class="text-xs text-slate-600 mt-1">Toque em "Adicionar" para guardar mídias com segurança.</p>
+            </div>
+
+            <!-- Media Thumbnail Grid -->
+            <div id="media-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
+                <!-- Media Cards populated via JS -->
+            </div>
+        </main>
+
+        <!-- VIEW B: SECRET NOTES LIST & EDITOR -->
+        <main id="view-notes" class="hidden flex-1 w-full h-full flex flex-col bg-slate-950 overflow-hidden">
+            <!-- Notes Dashboard View -->
+            <div id="notes-list-view" class="flex-1 w-full h-full overflow-y-auto custom-scroll p-3">
+                <div id="notes-empty" class="h-full flex flex-col items-center justify-center text-slate-500 p-6 text-center">
+                    <svg class="w-16 h-16 mb-3 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    <p class="text-sm font-medium text-slate-400">Nenhuma nota secreta</p>
+                    <p class="text-xs text-slate-600 mt-1">Toque em "Nova Nota" para criar um anotação privada.</p>
+                </div>
+                <div id="notes-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <!-- Note Cards populated via JS -->
+                </div>
+            </div>
+
+            <!-- Single Note View / Editor Overlay -->
+            <div id="note-editor-view" class="hidden absolute inset-0 bg-slate-950 z-30 flex flex-col p-4">
+                <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-800">
+                    <button id="btn-back-notes" class="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span>Voltar</span>
+                    </button>
+                    <div class="flex gap-2">
+                        <button id="btn-delete-note" class="p-2 rounded-xl bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                        <button id="btn-save-note" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+                <input id="note-title-input" type="text" placeholder="Título da nota..." class="bg-transparent text-lg font-bold text-slate-100 placeholder-slate-600 focus:outline-none mb-3 border-b border-slate-900 pb-2">
+                <textarea id="note-content-input" placeholder="Escreva seu texto confidencial aqui..." class="flex-1 w-full bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 resize-none custom-scroll"></textarea>
+            </div>
+        </main>
+    </div>
